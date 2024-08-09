@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+APPS=$HOME/.var/app/*
+
+for APP in $APPS; do
+  mkdir -p "$APP/config/glib-2.0/settings"
+  touch "$APP/config/glib-2.0/settings/keyfile"
+  chmod u+rwX,g-rwx,o-rwx -R "$APP/config/glib-2.0"
+  LINES=$(awk -v CURSOR_THEME=Breeze_Light -v CURSOR_SIZE=24 '
+      {
+        if (match($0, /^\[(.+)\]$/, s)) {
+          schema = s[1]
+
+          if (schema == "org/gnome/desktop/interface") {
+            has_interface_schema = 1
+            schema_end = NR
+          }
+
+          lines[i++] = $0
+        } else if (match($0, /^(.+)=(.+)$/, v)) {
+          key = v[1]
+          value = v[2]
+
+          if (schema == "org/gnome/desktop/interface") {
+            has_interface_schema = 1
+            schema_end = i
+
+            if (key != "cursor-theme" && key != "cursor-size") {
+              lines[i++] = $0
+            }
+          } else {
+            lines[i++] = $0
+          }
+        } else {
+          lines[i++] = $0
+        }
+      }
+
+      END {
+        if (!has_interface_schema) {
+          if (i && length(lines[i-1]) != 0) lines[i++] = ""
+          lines[i++] = "[org/gnome/desktop/interface]"
+          lines[i++] = "cursor-theme='\''" CURSOR_THEME "'\''"
+          lines[i++] = "cursor-size=" CURSOR_SIZE
+        } else {
+          for (j = 0; j < i + 2; j++) {
+            if (j == schema_end) {
+              tmp[j] = "cursor-theme='\''" CURSOR_THEME "'\''"
+            } else if (j == schema_end + 1) {
+              tmp[j] = "cursor-size=" CURSOR_SIZE
+            } else if (j > schema_end) {
+              tmp[j] = lines[j-2]
+            } else {
+              tmp[j] = lines[j]
+            }
+          }
+
+          i = j
+
+          for (j = 0; j < i; j++) {
+            lines[j] = tmp[j]
+          }
+        }
+
+        for (j = 0; j < i; j++) {
+          print lines[j]
+        }
+      }
+    ' "$APP/config/glib-2.0/settings/keyfile")
+  echo "$LINES" >"$APP/config/glib-2.0/settings/keyfile"
+done

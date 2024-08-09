@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+NEEDED_BINS=(
+  {{ if (or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu")) -}}
+  batcat
+  {{ else -}}
+  bat
+  {{ end -}}
+  eza
+  fd
+  fzf
+  gh
+  git
+  nvim
+  rg
+  tmux
+  zoxide
+  zsh
+)
+
+for bin in "${NEEDED_BINS[@]}"; do
+  if ! command -v "$bin" &>/dev/null; then
+    MISSING="${MISSING:+"$MISSING "}$bin"
+  fi
+done
+
+if [ ! -z "$MISSING" ]; then
+  echo "The following binaries are missing:"
+  for bin in $MISSING; do
+    echo " - $bin"
+  done
+
+  echo ""
+  echo "You will need to install them manually"
+fi

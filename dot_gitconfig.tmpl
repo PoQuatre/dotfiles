@@ -1,0 +1,12 @@
+[user]
+	name = PoQuatre
+	email = leflem.mateo2002@gmail.com
+{{- if hasKey . "gpgKey" }}
+	signingKey = {{ .gpgKey }}
+[commit]
+	gpgSign = true
+{{- end }}
+[url "git@github.com:PoQuatre/"]
+	insteadOf = https://github.com/PoQuatre/
+[init]
+	defaultBranch = main

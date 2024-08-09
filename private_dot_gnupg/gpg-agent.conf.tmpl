@@ -1,0 +1,10 @@
+{{ if hasKey . "gpgPinentry" -}}
+pinentry-program {{ .gpgPinentry }}
+
+{{ end -}}
+default-cache-ttl 3600
+default-cache-ttl-ssh 3600
+max-cache-ttl 3600
+max-cache-ttl-ssh 3600
+
+enable-ssh-support

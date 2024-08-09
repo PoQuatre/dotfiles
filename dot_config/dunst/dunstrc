@@ -1,0 +1,22 @@
+[global]
+frame_color = "#89b4fa"
+separator_color = frame
+offset = 10x10
+corner_radius = 5
+font = "FiraCode Nerd Font 12"
+transparency = 10
+frame_width = 2
+gap_size = 10
+
+[urgency_low]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+
+[urgency_normal]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+
+[urgency_critical]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+frame_color = "#fab387"

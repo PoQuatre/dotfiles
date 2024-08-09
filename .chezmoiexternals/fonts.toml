@@ -1,0 +1,23 @@
+[".local/share/fonts/NerdFonts/MesloLG"]
+type = "archive"
+url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz"
+refreshPeriod = "168h"
+include = [
+  "MesloLGSNerdFont-BoldItalic.ttf",
+  "MesloLGSNerdFont-Bold.ttf",
+  "MesloLGSNerdFont-Italic.ttf",
+  "MesloLGSNerdFont-Regular.ttf",
+]
+
+[".local/share/fonts/NerdFonts/FiraCode"]
+type = "archive"
+url = "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.tar.xz"
+refreshPeriod = "168h"
+include = [
+  "FiraCodeNerdFont-Bold.ttf",
+  "FiraCodeNerdFont-Light.ttf",
+  "FiraCodeNerdFont-Medium.ttf",
+  "FiraCodeNerdFont-Regular.ttf",
+  "FiraCodeNerdFont-Retina.ttf",
+  "FiraCodeNerdFont-SemiBold.ttf",
+]

@@ -1,0 +1,184 @@
+{
+  "layer": "bottom",
+  "position": "top",
+  "modules-left": [
+    "hyprland/workspaces",
+    "hyprland/window",
+    "hyprland/submap"
+  ],
+  "modules-center": [
+    "mpris"
+  ],
+  "modules-right": [
+    "tray",
+    "group/connectivity",
+    "group/system"
+  ],
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "default": "󰐾",
+      "active": "󰝥",
+      "empty": "󰝦"
+    },
+    "persistent-workspaces": {
+      "*": 5
+    },
+    "on-scroll-up": "hyprctl dispatch workspace -1",
+    "on-scroll-down": "hyprctl dispatch workspace +1",
+    "smooth-scrolling-threshold": 1.0
+  },
+  "hyprland/window": {
+    "max-length": 40
+  },
+  "mpris": {
+    "format": "{player_icon} {dynamic}",
+    "format-paused": "{status_icon} {dynamic}",
+    "title-len": 40,
+    "artist-len": 20,
+    "dynamic-order": [
+      "artist",
+      "title"
+    ],
+    "dynamic-separator": " —— ",
+    "player-icons": {
+      "default": "󰐊",
+      "spotify": "󰝚"
+    },
+    "status-icons": {
+      "paused": "󰏤"
+    }
+  },
+  "group/connectivity": {
+    "orientation": "inherit",
+    "modules": [
+      "group/network",
+      "group/bluetooth"
+    ]
+  },
+  "group/network": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "network",
+      "network#details"
+    ]
+  },
+  "network": {
+    "format": "󰛳",
+    "format-wifi": "{icon}",
+    "format-disconnected": "󰲛",
+    "format-icons": {
+      "wifi": [
+        "󰤟",
+        "󰤢",
+        "󰤥",
+        "󰤨"
+      ]
+    }
+  },
+  "network#details": {
+    "format": "{ifname}",
+    "format-wifi": "{essid} ({signalStrength}%)",
+    "format-disconnected": ""
+  },
+  "group/bluetooth": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "bluetooth",
+      "bluetooth#devices"
+    ]
+  },
+  "bluetooth": {
+    "format": "󰂯",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+    "on-click": "rofi-bluetooth"
+  },
+  "bluetooth#devices": {
+    "format": "",
+    "format-connected": "{num_connections} devices",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+    "on-click": "rofi-bluetooth"
+  },
+  "group/system": {
+    "orientation": "inherit",
+    "modules": [
+      "backlight",
+      "pulseaudio",
+      "battery",
+      "clock"
+    ]
+  },
+  "backlight": {
+    "format": "{percent}% {icon}",
+    "format-icons": [
+      "󰝦",
+      "󰪞",
+      "󰪟",
+      "󰪠",
+      "󰪡",
+      "󰪢",
+      "󰪣",
+      "󰪤",
+      "󰪥"
+    ],
+    "smooth-scrolling-threshold": 1.0,
+    "scroll-step": 2,
+    "on-scroll-up": "brightnessctl --quiet set +1%",
+    "on-scroll-down": "brightnessctl --quiet set 1%-"
+  },
+  "pulseaudio": {
+    "format": "{volume}% {icon}",
+    "format-muted": "{volume}% 󰝟",
+    "format-icons": [
+      "󰕿",
+      "󰖀",
+      "󰕾"
+    ],
+    "smooth-scrolling-threshold": 1.0
+  },
+  "battery": {
+    "interval": 10,
+    "states": {
+      "warn": 25,
+      "critical": 10
+    },
+    "format": "{capacity}% {icon}",
+    "format-critical": "{capacity}% {icon}󰈅",
+    "format-charging": "{capacity}% {icon}󱐋",
+    "format-charging-critical": "{capacity}% {icon}󱐋",
+    "format-icons": [
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ]
+  },
+  "clock": {
+    "interval": 1,
+    "format": "{:%H:%M:%S}",
+    "format-alt": "{:%d/%m/%Y}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  }
+}

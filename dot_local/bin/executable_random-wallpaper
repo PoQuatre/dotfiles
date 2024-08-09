@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+wallpaper_path="$HOME/Pictures/wallpapers"
+
+new_wallpaper=$(find "$wallpaper_path" -maxdepth 1 -type f | sort -R | tail -1)
+
+swww img "$new_wallpaper" "$@"
