@@ -1,0 +1,11 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $osid := .chezmoi.os -}}
+{{- if hasKey .chezmoi.osRelease "id" -}}
+{{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+{{- $osid = printf "%s-%s" $osid .chezmoi.hostname -}}
+{{- $stdin := .chezmoi.stdin -}}
+{{- if empty $stdin -}}
+{{-   $stdin = "[data]\nosid=\"\"" -}}
+{{- end -}}
+{{- fromToml $stdin | setValueAtPath "data.osid" $osid | toToml -}}
