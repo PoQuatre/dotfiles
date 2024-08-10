@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+chezmoi execute-template <"$(chezmoi source-path)/run_before_check-installed-bins.sh.tmpl"
+
+cat <<EOF
+if [ -z "\$MISSING" ]; then
+  echo "All needed binaries for your environment are installed"
+fi
+EOF
