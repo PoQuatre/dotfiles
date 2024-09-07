@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+QUERY="$@"
+SESSIONS="$(tmux list-sessions)"
+[ $? -ne 0 ] && echo "No session currently open" 1>&2 && exit 1
+
+SESSION="$(echo "$SESSIONS" | fzf --tmux -q "$QUERY" -m0 -0 --layout=reverse)"
+[ $? -eq 130 ] && echo "Cancelled" 1>&2 && exit 0
+SESSION="$(echo "$SESSION" | cut -d':' -f1)"
+
+if [ -z "$SESSION" ]; then
+  echo "No session found matching matching your query" 1>&2
+  exit 1
+fi
+
+if [ -z "$TMUX" ]; then
+  tmux attach -t "$SESSION"
+else
+  tmux switchc -t "$SESSION"
+fi

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+NAME="$1"
+
+if [ -z "$NAME" ]; then
+  NAME="$(basename $(pwd))"
+fi
+
+tmux has -t="$NAME" >/dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+  if [ -z "$TMUX" ]; then
+    tmux attach -t "$NAME"
+  else
+    tmux switchc -t "$NAME"
+  fi
+else
+  if [ -z "$TMUX" ]; then
+    tmux new -s "$NAME"
+  else
+    tmux new -d -s "$NAME"
+    tmux switchc -t "$NAME"
+  fi
+fi
