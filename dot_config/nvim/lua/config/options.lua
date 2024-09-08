@@ -8,3 +8,4 @@ opt.foldmethod = "expr"
 opt.foldexpr = "nvim_treesitter#foldexpr()"
 
 opt.colorcolumn = { 80 }
+vim.g.c_syntax_for_h = 1
