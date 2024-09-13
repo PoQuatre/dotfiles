@@ -3,11 +3,16 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-{{ if eq .chezmoi.hostname "boreas-nebula" -}}
-export PATH="$HOME/.local/bin:$HOME/.spicetify:/usr/local/go/bin:$PATH"
-{{ else -}}
+[ -d "/usr/local/go/bin" ] && \
+  export PATH="/usr/local/go/bin:$PATH"
+
+[ -d "$HOME/.spicetify" ] && \
+  export PATH="$HOME/.spicetify:$PATH"
+
+[ -d "$HOME/.local/funcheck/host" ] && \
+  export PATH="$HOME/.local/funcheck/host:$PATH"
+
 export PATH="$HOME/.local/bin:$PATH"
-{{- end }}
 
 ##start oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
