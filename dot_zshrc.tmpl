@@ -57,10 +57,10 @@ if command -v bat &>/dev/null; then
 fi
 
 if command -v eza &>/dev/null; then
-  alias ls="eza --git-ignore --group-directories-first"
-  alias ll="eza --git-ignore --group-directories-first -l --git"
+  alias ls="eza --group-directories-first"
+  alias ll="eza --group-directories-first -l --git"
   alias lla="eza --group-directories-first -l --git -a"
-  alias tree="eza --git-ignore --group-directories-first -T --git"
+  alias tree="eza --group-directories-first -T --git"
 fi
 
 if command -v fzf &>/dev/null; then
