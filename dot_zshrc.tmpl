@@ -38,6 +38,15 @@ export LESS="--mouse --wheel-lines=3 -R"
 
 eval "$(chezmoi completion zsh)"
 alias cm=chezmoi
+alias cmg="cm git --"
+alias cmgs="cmg status"
+alias cmgd="cmg diff"
+alias cmgds="cmg diff --staged"
+alias cmgc="cmg commit"
+alias cmgcm="cmg commit -m"
+alias cmgca="cmg commit --amend"
+alias cmga="cmg add"
+alias cmgaa="cmg add ."
 
 alias g="git"
 alias gs="git status"
