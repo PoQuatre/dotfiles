@@ -1,0 +1,167 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use File::Temp qw(tempdir);
+use POSIX ":sys_wait_h";
+use Cwd;
+
+# Configuration
+my $REFRESH_FREQUENCY = 1; # in seconds
+my $TMP_DIR = tempdir( CLEANUP => 1 );
+my $LOOP_FILE = "$TMP_DIR/loop";
+my $TRIGGER_FILE = "$TMP_DIR/trigger";
+my $PID_FILE = "$TMP_DIR/pid";
+
+# Create necessary files
+open(my $loop_fh, '>', $LOOP_FILE) or die "Could not create $LOOP_FILE: $!";
+open(my $trigger_fh, '>', $TRIGGER_FILE) or die "Could not create $TRIGGER_FILE: $!";
+close $loop_fh;
+close $trigger_fh;
+
+## Print debug information
+#print "TMP_DIR: $TMP_DIR\n";
+#print "LOOP_FILE: $LOOP_FILE\n";
+#print "TRIGGER_FILE: $TRIGGER_FILE\n";
+#print "PID_FILE: $PID_FILE\n";
+
+# Signal handling
+$SIG{INT} = \&handle_signals;
+$SIG{TERM} = \&handle_signals;
+
+sub kill_children {
+  my ($pid) = @_;
+
+  # Find child processes using `ps`
+  my @children = `ps --ppid $pid -o pid=`;
+
+  # Remove any leading/trailing whitespace from the list of PIDs
+  chomp @children;
+
+  # Kill each child process
+  foreach my $child_pid (@children) {
+    kill 'INT', $child_pid;
+  }
+
+  # Wait for all child processes to exit (wait for any child)
+  while ((my $kid = waitpid(-1, 0)) > 0) {}
+}
+
+my $first_run = 1;
+
+sub run_make {
+  # Add empty lines only if it's not the first run
+  if (!$first_run) {
+    print "\n" x 3;
+  }
+
+  # Check if make is already running
+  if (-e $PID_FILE) {
+    open my $pid_fh, '<', $PID_FILE or die "Cannot open $PID_FILE: $!";
+    my $pid = <$pid_fh>;
+    chomp $pid;
+    close $pid_fh;
+
+    if (kill 0 => $pid) {
+      kill_children($pid);
+      kill 'INT', $pid;
+      waitpid $pid, 0;
+    }
+  }
+
+  # Run make in the background
+  my $pid = fork();
+  if ($pid == 0) {
+    exec("make @_");
+    exit 0;
+  } else {
+    open my $pid_fh, '>', $PID_FILE or die "Cannot open $PID_FILE: $!";
+    print $pid_fh $pid;
+    close $pid_fh;
+    waitpid $pid, 0;
+    unlink $PID_FILE;
+  }
+
+  # After the first run, disable the first_run flag
+  $first_run = 0;
+}
+
+sub monitor_changes {
+  $SIG{INT} = 'IGNORE';
+  $SIG{TERM} = 'IGNORE';
+
+  my $find_mmin = $REFRESH_FREQUENCY / 60;
+  while (-e $LOOP_FILE) {
+    my $files = `
+      find . -type f -not -path '*node_modules*' \\
+        -a -not -path '*.git*' \\
+        -a -not -path '*~' \\
+        -a -mmin $find_mmin \\
+        -exec sh -c '
+          for f do
+            git check-ignore -q "\$f" ||
+            echo "\$f"
+          done
+        ' find-sh {} +
+    `;
+
+    if ($files) {
+      open my $trigger_fh, '>', $TRIGGER_FILE or die "Cannot open $TRIGGER_FILE: $!";
+      close $trigger_fh;
+
+      if (-e $PID_FILE) {
+        open my $pid_fh, '<', $PID_FILE or die "Cannot open $PID_FILE: $!";
+        my $pid = <$pid_fh>;
+        chomp $pid;
+        close $pid_fh;
+
+        if (kill 0 => $pid) {
+          kill_children($pid);
+          kill 'INT', $pid;
+        }
+      }
+    }
+
+    sleep $REFRESH_FREQUENCY;
+  }
+}
+
+sub handle_signals {
+  if (-e $PID_FILE) {
+    open my $pid_fh, '<', $PID_FILE or die "Cannot open $PID_FILE: $!";
+    my $pid = <$pid_fh>;
+    chomp $pid;
+    close $pid_fh;
+
+    if (kill 0 => $pid) {
+      # kill_children($pid);
+      kill 'INT', $pid;
+      waitpid $pid, 0;
+    }
+    unlink $PID_FILE;
+  } else {
+    unlink $TMP_DIR;
+    exit 0;
+  }
+}
+
+# Start monitoring for changes in the background
+my $monitor_pid = fork();
+if ($monitor_pid == 0) {
+  monitor_changes();
+  exit 0;
+}
+
+# Main loop to trigger the make command
+while (1) {
+  if (-e $TRIGGER_FILE) {
+    unlink $TRIGGER_FILE;
+    run_make(@ARGV);
+  }
+  sleep 1;
+}
+
+# Cleanup when exiting
+END {
+  unlink $TMP_DIR if -d $TMP_DIR;
+}
