@@ -1,24 +1,42 @@
 #!/usr/bin/env bash
 
-NAME="$1"
+SOCKET_BASE_PATH=/tmp/tmux-$UID
+mkdir -p "$SOCKET_BASE_PATH"
+chmod 700 "$SOCKET_BASE_PATH"
 
-if [ -z "$NAME" ]; then
-  NAME="$(basename $(pwd))"
+SOCKET_NAME=default
+if [[ -f /run/.containerenv && -r /run/.containerenv ]]; then
+  SOCKET_NAME=$(
+    grep -m 1 '^name=' /run/.containerenv |
+      cut -d '=' -f 2 |
+      sed 's/^"//;s/"$//' |
+      xargs echo -e
+  )
 fi
 
-tmux has -t="$NAME" >/dev/null 2>&1
+NAME="$1"
+[ -z "$NAME" ] && NAME="$(basename $(pwd))"
 
-if [ $? -eq 0 ]; then
+FOUND_SOCKET=""
+for SOCKET in $SOCKET_BASE_PATH/*; do
+  tmux -S "$SOCKET" has -t="$NAME" >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    FOUND_SOCKET="$SOCKET"
+    break
+  fi
+done
+
+if [ ! -z "$FOUND_SOCKET" ]; then
   if [ -z "$TMUX" ]; then
-    tmux attach -t "$NAME"
+    tmux -S "$FOUND_SOCKET" attach -t "$NAME"
   else
-    tmux switchc -t "$NAME"
+    tmux -S "$FOUND_SOCKET" switchc -t "$NAME"
   fi
 else
   if [ -z "$TMUX" ]; then
-    tmux new -s "$NAME"
+    tmux -S "$SOCKET_BASE_PATH/$SOCKET_NAME" new -s "$NAME"
   else
-    tmux new -d -s "$NAME"
-    tmux switchc -t "$NAME"
+    tmux -S "$SOCKET_BASE_PATH/$SOCKET_NAME" new -d -s "$NAME"
+    tmux -S "$SOCKET_BASE_PATH/$SOCKET_NAME" switchc -t "$NAME"
   fi
 fi

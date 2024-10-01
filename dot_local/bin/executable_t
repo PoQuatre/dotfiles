@@ -1,10 +1,58 @@
 #!/usr/bin/env bash
 
 QUERY="$@"
-SESSIONS="$(tmux list-sessions)"
-[ $? -ne 0 ] && echo "No session currently open" 1>&2 && exit 1
+SOCKET_BASE_PATH=/tmp/tmux-$UID
+SESSIONS=""
 
-SESSION="$(echo "$SESSIONS" | fzf --tmux -q "$QUERY" -m0 -0 --layout=reverse)"
+if [ -z "$TMUX" ]; then
+  COLS=$(($(tput cols) - 3))
+
+  function append_socket_sessions() {
+    local sock="$1"
+    local name="$(basename "$sock" | sed -e 's/^default$/host/')"
+    local list="$(tmux -S "$sock" list-sessions 2>/dev/null)"
+
+    if [ ! -z "$list" ]; then
+      SESSIONS+=$(echo "$list" | awk -v name="$name" -v cols="$COLS" '
+        {
+          bright_black = "\033[90m"
+          cyan = "\033[36m"
+          reset = "\033[0m"
+
+          line_len = length($0)
+          name_len = length(name)
+          max_len = cols - name_len - 1
+
+          if (line_len > max_len) {
+            visible_line = substr($0, 1, max_len)
+            line = visible_line bright_black "..." reset
+          } else {
+            visible_line = $0
+            line = visible_line
+          }
+
+          padding = cols - length(visible_line) - name_len
+          if (padding < 0) padding = 0
+
+          printf "\n%s%*s%s%s%s", line, padding, "", cyan, name, reset
+        }
+      ')
+    fi
+  }
+
+  for SOCKET in $SOCKET_BASE_PATH/*; do
+    append_socket_sessions $SOCKET
+  done
+else
+  SESSIONS="$(tmux -S "$(echo $TMUX | cut -d',' -f1)" list-sessions 2>/dev/null)"
+fi
+
+if [ -z "$SESSIONS" ]; then
+  echo "No session currently open" 1>&2
+  exit 1
+fi
+
+SESSION="$(echo "${SESSIONS#"${SESSIONS%%[!$'\n']*}"}" | fzf --tmux --ansi -q "$QUERY" -m0 -0 --layout=reverse)"
 [ $? -eq 130 ] && echo "Cancelled" 1>&2 && exit 0
 SESSION="$(echo "$SESSION" | cut -d':' -f1)"
 
@@ -13,8 +61,23 @@ if [ -z "$SESSION" ]; then
   exit 1
 fi
 
+FOUND_SOCKET=""
+for SOCKET in $SOCKET_BASE_PATH/*; do
+  tmux -S "$SOCKET" has -t="$SESSION" >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    FOUND_SOCKET="$SOCKET"
+    break
+  fi
+done
+
 if [ -z "$TMUX" ]; then
-  tmux attach -t "$SESSION"
+  tmux -S "$FOUND_SOCKET" attach -t "$SESSION"
 else
-  tmux switchc -t "$SESSION"
+  if [ "$FOUND_SOCKET" != "$(tmux display-message -p '#{socket_path}')" ]; then
+    tmux run-shell "tmux detach-client; tmux -S '$FOUND_SOCKET' attach -t '$SESSION'" &
+    exit 0
+  else
+    tmux switch-client -t "$SESSION"
+  fi
+  # tmux -S "$FOUND_SOCKET" switchc -t "$SESSION"
 fi
