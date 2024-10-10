@@ -29,6 +29,8 @@ return {
     })
 
     opts.filesystem = vim.tbl_deep_extend("force", opts.filesystem or {}, {
+      use_libuv_file_watcher = true,
+
       filtered_items = {
         hide_dotfiles = false,
         hide_by_name = {
