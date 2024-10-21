@@ -66,5 +66,14 @@ return {
       expr = true,
       silent = true,
     },
+    {
+      "<esc>",
+      function()
+        return vim.snippet.active() and "<cmd>lua vim.snippet.stop()<cr>" or "<cmd>nohls<cr>"
+      end,
+      expr = true,
+      silent = true,
+      mode = "n",
+    },
   },
 }
