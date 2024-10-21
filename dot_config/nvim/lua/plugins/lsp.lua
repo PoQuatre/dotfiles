@@ -12,6 +12,9 @@ return {
         },
         templ = {},
         htmx = {},
+        clangd = {
+          cmd = { "clangd", "--header-insertion=never" },
+        },
       })
 
       return opts
