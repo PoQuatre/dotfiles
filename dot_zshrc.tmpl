@@ -72,6 +72,10 @@ if command -v toolbox &>/dev/null; then
   alias te="toolbox enter"
 fi
 
+if command -v distrobox &>/dev/null; then
+  alias de="distrobox enter"
+fi
+
 {{ if (or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu")) -}}
 if command -v batcat &>/dev/null; then
 {{ else -}}
