@@ -12,6 +12,9 @@ fi
 [ -d "$HOME/.local/funcheck/host" ] && \
   export PATH="$HOME/.local/funcheck/host:$PATH"
 
+[ -d "/nix" ] && [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ] && \
+  source "$HOME/.nix-profile/etc/profile.d/nix.sh"
+
 export PATH="$HOME/.local/bin:$PATH"
 
 ##start oh-my-zsh
