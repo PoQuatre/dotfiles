@@ -16,8 +16,10 @@ LazyVim.toggle.map(
       LazyVim.toggle.diagnostics.set(not state)
       LazyVim.toggle.inlay_hints.set(not state)
       if state then
+        vim.opt.showtabline = 0
         vim.cmd("ScrollbarHide")
       else
+        vim.opt.showtabline = 99999
         vim.cmd("ScrollbarShow")
       end
       vim.g.zenmode = not vim.g.zenmode
