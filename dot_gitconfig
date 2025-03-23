@@ -1,0 +1,25 @@
+[user]
+    name = Mateo LE FLEM
+    email = mle-flem@student.42.fr
+    signingkey = 0x4196A0AC2974131C
+[commit]
+    gpgsign = true
+[init]
+    defaultBranch = main
+[pull]
+    rebase = true
+[url "git@github.com:PoQuatre/"]
+    insteadOf = https://github.com/PoQuatre
+
+[include]
+    path = ~/.catppuccin.gitconfig
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    features = catppuccin-mocha
+    navigate = true
+	dark = true
+#[merge]
+#    conflictStyle = diff3
