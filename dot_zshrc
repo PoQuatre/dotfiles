@@ -145,62 +145,63 @@ else
 fi
 
 if command -v distrobox &>/dev/null; then
-	de() {
-		local cache_file="$XDG_CACHE_HOME/distrobox-auto-enter-exit-pwd"
-		local current="$(grep -m 1 "^name=" /run/.containerenv 2>/dev/null | cut -d'=' -f2)"
-		local current="${(Q)${current}}"
-
-		distrobox enter "$@"
-		if [ -f "$cache_file" ]; then
-			\cd "$(cat "$cache_file")"
-			rm -f "$cache_file"
-		elif [ ! -z "$current" ]; then
-			exit
-		fi
-	}
+	alias de="distrobox enter"
+#	de() {
+#		local cache_file="$XDG_CACHE_HOME/distrobox-auto-enter-exit-pwd"
+#		local current="$(grep -m 1 "^name=" /run/.containerenv 2>/dev/null | cut -d'=' -f2)"
+#		local current="${(Q)${current}}"
+#
+#		distrobox enter "$@"
+#		if [ -f "$cache_file" ]; then
+#			\cd "$(cat "$cache_file")"
+#			rm -f "$cache_file"
+#		elif [ ! -z "$current" ]; then
+#			exit
+#		fi
+#	}
 fi
 
 if command -v distrobox &>/dev/null || [ -f /run/.containerenv ]; then
-	autoload -Uz add-zsh-hook
-
-	_distrobox_auto_enter_exit() {
-		local cache_file="$XDG_CACHE_HOME/distrobox-auto-enter-exit-pwd"
-		local current="$(grep -m 1 "^name=" /run/.containerenv 2>/dev/null | cut -d'=' -f2)"
-		local current="${(Q)${current}}"
-		local target=''
-		declare -A target_map
-
-		target_map[$HOME/aports]='aports'
-		target_map[$HOME/mpr]='42-dev'
-
-		for dir in "${(@k)target_map}"; do
-			if [[ "$PWD" == "$dir" ]] || [[ "$PWD" = "$dir"/* ]]; then
-				target="${target_map[$dir]}"
-				break
-			fi
-		done
-
-		if [[ "$current" != "$target" ]]; then
-			if [ ! -z "${target}${DISTROBOX_AUTO}" ] && [ ! -z "$current" ]; then
-				echo "Exiting Distrobox container: $current"
-				pwd > "$cache_file"
-				exit
-			fi
-
-			if [ ! -z "$target" ]; then
-				echo "Entering Distrobox container: ${target_map[$dir]}"
-				distrobox enter -a '--env DISTROBOX_AUTO=auto' "$target"
-				if [ -f "$cache_file" ]; then
-					builtin cd "$(cat "$cache_file")"
-					rm -f "$cache_file"
-				elif [ ! -z "$current" ]; then
-					exit
-				fi
-			fi
-		fi
-	}
-
-	add-zsh-hook chpwd _distrobox_auto_enter_exit
+#	autoload -Uz add-zsh-hook
+#
+#	_distrobox_auto_enter_exit() {
+#		local cache_file="$XDG_CACHE_HOME/distrobox-auto-enter-exit-pwd"
+#		local current="$(grep -m 1 "^name=" /run/.containerenv 2>/dev/null | cut -d'=' -f2)"
+#		local current="${(Q)${current}}"
+#		local target=''
+#		declare -A target_map
+#
+#		target_map[$HOME/aports]='aports'
+#		target_map[$HOME/mpr]='42-dev'
+#
+#		for dir in "${(@k)target_map}"; do
+#			if [[ "$PWD" == "$dir" ]] || [[ "$PWD" = "$dir"/* ]]; then
+#				target="${target_map[$dir]}"
+#				break
+#			fi
+#		done
+#
+#		if [[ "$current" != "$target" ]]; then
+#			if [ ! -z "${target}${DISTROBOX_AUTO}" ] && [ ! -z "$current" ]; then
+#				echo "Exiting Distrobox container: $current"
+#				pwd > "$cache_file"
+#				exit
+#			fi
+#
+#			if [ ! -z "$target" ]; then
+#				echo "Entering Distrobox container: ${target_map[$dir]}"
+#				distrobox enter -a '--env DISTROBOX_AUTO=auto' "$target"
+#				if [ -f "$cache_file" ]; then
+#					builtin cd "$(cat "$cache_file")"
+#					rm -f "$cache_file"
+#				elif [ ! -z "$current" ]; then
+#					exit
+#				fi
+#			fi
+#		fi
+#	}
+#
+#	add-zsh-hook chpwd _distrobox_auto_enter_exit
 fi
 
 export GPG_TTY="$(tty)"
