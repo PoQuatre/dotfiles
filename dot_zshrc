@@ -58,6 +58,22 @@ alias cl=clear
 
 if command -v chezmoi &>/dev/null; then
 	alias cm=chezmoi
+
+	alias cmg='chezmoi git --'
+	alias cmgs='chezmoi git -- status'
+	alias cmga='chezmoi git -- add'
+	alias cmgaa='chezmoi git -- add .'
+	alias cmgc='chezmoi git -- commit'
+	alias cmgcm='chezmoi git -- commit -m'
+	alias cmgca='chezmoi git -- commit --amend'
+	alias cmgd='chezmoi git -- diff'
+	alias cmgds='chezmoi git -- diff --cached'
+	alias cmgr='chezmoi git -- restore'
+	alias cmgrs='chezmoi git -- restore --staged'
+	alias cmgl="chezmoi git -- log"
+	alias cmgll="chezmoi git -- log --oneline"
+	alias cmglg="chezmoi git -- log --graph"
+	alias cmgllg="chezmoi git -- log --oneline --graph"
 fi
 
 if command -v git &>/dev/null; then
