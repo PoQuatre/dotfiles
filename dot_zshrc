@@ -130,12 +130,12 @@ fi
 
 if command -v eza &>/dev/null; then
 	alias ls='eza'
-	alias l='eza -l'
-	alias ll='eza -l'
-	alias llh='eza -lh'
-	alias lla='eza -la'
-	alias llha='eza -lha'
-	alias tree='eza --tree'
+	alias l='eza -l --group-directories-first'
+	alias ll='eza -l --group-directories-first'
+	alias llh='eza -lh --group-directories-first'
+	alias lla='eza -la --group-directories-first'
+	alias llha='eza -lha --group-directories-first'
+	alias tree='eza --tree --group-directories-last'
 else
 	alias l='ls -l'
 	alias ll='ls -l'
