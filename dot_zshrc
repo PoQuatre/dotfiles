@@ -43,7 +43,7 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 
 if command -v less &>/dev/null; then
-	export LESS='--mouse --wheel-lines=3 --tabs=1,5'
+	export LESS='-R --mouse --wheel-lines=3 --tabs=1,5'
 fi
 
 if command -v nvim &>/dev/null; then
