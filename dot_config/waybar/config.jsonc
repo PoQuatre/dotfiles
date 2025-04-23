@@ -81,12 +81,14 @@
         "󰤥",
         "󰤨"
       ]
-    }
+    },
+    "on-click": "rofi-wifi-menu"
   },
   "network#details": {
     "format": "{ifname}",
     "format-wifi": "{essid} ({signalStrength}%)",
-    "format-disconnected": ""
+    "format-disconnected": "",
+    "on-click": "rofi-wifi-menu"
   },
   "group/bluetooth": {
     "orientation": "inherit",
