@@ -204,6 +204,17 @@ if command -v distrobox &>/dev/null || [ -f /run/.containerenv ]; then
 #	add-zsh-hook chpwd _distrobox_auto_enter_exit
 fi
 
+if command -v yazi &>/dev/null; then
+	y() {
+		local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+		yazi "$@" --cwd-file="$tmp"
+		if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+			builtin cd -- "$cwd"
+		fi
+		rm -f -- "$tmp"
+	}
+fi
+
 export GPG_TTY="$(tty)"
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
