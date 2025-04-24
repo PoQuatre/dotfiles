@@ -9,7 +9,7 @@
 [pull]
     rebase = true
 [url "git@github.com:PoQuatre/"]
-    insteadOf = https://github.com/PoQuatre
+    insteadOf = https://github.com/PoQuatre/
 
 [include]
     path = ~/.catppuccin.gitconfig
